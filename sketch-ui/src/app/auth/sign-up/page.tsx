@@ -166,7 +166,7 @@ export default function SignupPage() {
                         </Button>
                     </p>
                 </div>
-            </form>
+            </form> 
         </section>
     )
 }
