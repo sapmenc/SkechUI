@@ -95,5 +95,6 @@ export const useProjectCreation=()=>{
     }
 }
 
+//generate the thumbnail
 //we get the user , projectstate, shapes state 
-//create the project directly inside convex
+//create the project directly inside convex.we have to call a mutation function
