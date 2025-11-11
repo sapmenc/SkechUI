@@ -36,7 +36,7 @@ const Navbar=()=>{
     },
     {
         label:'Style Guide',
-        href:`/dashboard//style-guide?project=${projectId}`,
+        href:`/dashboard/${me?.name}/style-guide?project=${projectId}`,
         icon:<LayoutTemplate className="h-4 w-4"/>
     }
 ]
