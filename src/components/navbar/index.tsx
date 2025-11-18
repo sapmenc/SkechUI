@@ -10,6 +10,7 @@ import { Button } from "../ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 import { useAppSelector } from "@/redux/store"
 import CreateProject from "../buttons/project"
+import Autosave from "../canvas/autosave"
 
 type TabProps={
    label:string
@@ -114,7 +115,7 @@ const Navbar=()=>{
               </Avatar>
               {/* Todo : add autosave and create project */}
 
-              {/* hascanvas && <Autosave/> */}
+              {hasCanvas && <Autosave/>}
 
               {!hasCanvas && !hasStyleGuide && <CreateProject/>}
 

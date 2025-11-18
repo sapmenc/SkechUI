@@ -36,4 +36,5 @@ export const projectApi=createApi({
     }),
 })
 
+export const {useAutosaveProjectMutation}=projectApi
 // Redux Toolkit Query (RTK Query) to create an API slice that helps send requests to a backend for autosaving a project
