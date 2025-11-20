@@ -308,6 +308,7 @@ export const useStyleGuide=(
 
         } catch (error) {
             const errorMessage= error && typeof error ==='object' && 'error' in error ? (error as {error : string}).error : 'Failed to generate style guide '
+            toast.error(errorMessage)
         }
     }
     return {

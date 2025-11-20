@@ -83,3 +83,5 @@ export const ProjectQuery=async(projectId:string)=>{
     )
     return {project,profile}
 }
+
+

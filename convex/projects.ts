@@ -145,3 +145,32 @@ export const updateProjectSketches=mutation({
      return {success:true}
   }
 })
+
+export const updateProjectStyleGuide=mutation({
+  args:{
+    projectId:v.id('projects'),
+    styleGuideData:v.any()
+  },
+  handler:async(ctx,{projectId,styleGuideData})=>{
+    console.log('[Convex] Updating project style guide',projectId)
+    const userId=await getAuthUserId(ctx)
+    if(!userId){
+      throw new Error('Not Authenticated')
+    }
+    const project=await ctx.db.get(projectId)
+    if(!project){
+      throw new Error('Project Not Found')
+    }
+    if(project.userId !==userId){
+       throw new Error('Access Denied')
+    }
+
+    await ctx.db.patch(projectId,{
+      styleGuide:JSON.stringify(styleGuideData), //store as json string
+      lastModified:Date.now()
+    })
+
+    console.log('[Convex] Project style guide updated successfully')
+    return {success:true,styleGuideData:styleGuideData}
+  }
+})
