@@ -85,3 +85,12 @@ export const ProjectQuery=async(projectId:string)=>{
 }
 
 
+export const InspirationImagesQuery=async(projectId : string)=>{
+    const images=await preloadQuery(
+        api.,
+        {projectId:projectId as Id<'projects'>},
+        {token:await convexAuthNextjsToken()}
+    )
+
+    return {images}
+}

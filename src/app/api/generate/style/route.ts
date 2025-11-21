@@ -2,13 +2,14 @@ import { MoodBoardImagesQuery } from "@/convex/query.config";
 import { MoodBoardImage } from "@/hooks/use-styles";
 import { NextRequest, NextResponse } from "next/server";
 import { prompts } from "@/prompts";
-import {generateObject} from "ai"
 import {anthropic} from "@ai-sdk/anthropic"
 import z from 'zod'
 import { fetchMutation } from "convex/nextjs";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { generateObject } from "ai";
+
 
 const ColorSwatchSchema=z.object({
     name:z.string(),
@@ -95,12 +96,16 @@ export async function POST(request:NextRequest){
         }
         const images=moodBoardImages.images._valueJSON as unknown as MoodBoardImage[]
         const imgUrls=images.map((img)=>img.url).filter(Boolean)
+
+
         const systemPrompt=prompts.styleGuide.system
 
         const userPrompt=`Analyze these ${imgUrls.length} mood board images and generate a design system: Extract colors that work harmoniously together and create typography that matches the aesthetic.Return ONLY the JSON Object matching the exact schema structure above`
 
+
+
         const result=await generateObject({
-            model:anthropic('claude-sonnet-4-20250514'),
+            model: anthropic("claude-sonnet-4-20250514"),
             schema:StyleGuideSchema,
             system:systemPrompt,
             messages:[
@@ -119,6 +124,7 @@ export async function POST(request:NextRequest){
                 },
             ],
         })
+
         //if user has credits only the can use the ai. (TODO)
 
         //store all the generated style guide inside convex

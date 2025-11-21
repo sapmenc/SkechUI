@@ -1,9 +1,11 @@
 'use client'
-import { addArrow, addEllipse, addFrame, addFreeDrawShape, addLine, addRect, addText, clearSelection, FrameShape, removeShape, selectShape, setTool, Shape, Tool, updateShape } from "@/redux/slice/shapes";
+import { addArrow, addEllipse, addFrame, addFreeDrawShape, addGeneratedUI, addLine, addRect, addText, clearSelection, FrameShape, removeShape, selectShape, setTool, Shape, Tool, updateShape } from "@/redux/slice/shapes";
 import { handToolDisable, handToolEnable, panEnd, panMove, panStart, Point, screenToWorld, wheelPan, wheelZoom } from "@/redux/slice/viewport";
 import { AppDispatch,useAppDispatch,useAppSelector } from "@/redux/store";
+import { nanoid } from "@reduxjs/toolkit";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 import { number, string } from "zod";
 
 interface TouchPointer{
@@ -1051,9 +1053,81 @@ export const useFrame=(shape:FrameShape)=>{
        if(projectId){
           formData.append('projectId',projectId)
        }
-       setIsGenerating(false)
+       //send the response to ai
+       const response=await fetch('/api/generate',{
+        method:'POST',
+        body:formData
+       })
+       if(!response.ok){
+         const errorText=await response.text()
+         throw new Error(
+            `Api request failed:${response.status} ${response.statusText}-${errorText}`
+         )
+       }
+       //generate ui position. place this ui next to the frame
+       const generatedUIPosition={
+        x:shape.x + shape.w + 50, //50px spacing from frame
+        y:shape.y,
+        w:Math.max(400,shape.w), //atleast 400px widr or frame width if larger
+        h:Math.max(300,shape.h) //at least 300px high or frame height if larger
+       }
+
+       const generatedUIId=nanoid()
+
+       dispatch(
+        addGeneratedUI({
+            ...generatedUIPosition,
+            id:generatedUIId,
+            uiSpecData:null, //start with null for live rendering
+            sourceFrameId:shape.id
+        })
+       )
+
+       //stream the response
+       //TODO-> save the generation in the background continuously
+       const reader=response.body?.getReader()
+       const decoder=new TextDecoder()
+       let accumulatedMarkup=''
+
+       let lastUpdateTime=0
+       const UPDATE_THROTTLE_MS=200
+
+       if(reader){
+         try {
+            while(true){
+                const {done,value}=await reader.read()
+                if(done){
+                    //update with final accumulated markup
+                    dispatch(
+                        updateShape({
+                            id:generatedUIId,
+                            patch:{uiSpecData:accumulatedMarkup}
+                        })
+                    )
+                    break
+                }
+                const chunk=decoder.decode(value)
+                accumulatedMarkup+=chunk
+
+                const now=Date.now()
+                if(now-lastUpdateTime >= UPDATE_THROTTLE_MS){
+                    dispatch(
+                        updateShape({
+                            id:generatedUIId,
+                            patch:{uiSpecData:accumulatedMarkup}
+                        })
+                    )
+                    lastUpdateTime=now
+                }
+            }
+         } finally{
+            reader.releaseLock()
+         }
+       }
      } catch (error) {
-        
+        toast.error(`Failed to generate UI Design : ${error instanceof Error ? error.message : 'Unknown Error'}`)
+     } finally{
+        setIsGenerating(false)
      }
    }
    return {
