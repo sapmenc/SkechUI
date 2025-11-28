@@ -69,10 +69,10 @@ const Autosave = () => {
          }
       }, 1000);
 
-      //return and cleanup
-      if(debounceRef.current){
-         clearTimeout(debounceRef.current)
-      }
+      // //return and cleanup
+      // if(debounceRef.current){
+      //    clearTimeout(debounceRef.current)
+      // }
   },[isReady,
     shapesState,
     viewportState,

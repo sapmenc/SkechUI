@@ -1,5 +1,5 @@
 'use client'
-import { useInfiniteCanvas } from "@/hooks/use-canvas";
+import { useGlobalChat, useInfiniteCanvas } from "@/hooks/use-canvas";
 import React from "react";
 import TextSideBar from "./textsidebar";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,9 @@ import { ArrowPreview } from "./shapes/arrow/preview";
 import { LinePreview } from "./shapes/line/preview";
 import { FreeDrawStrokePreview } from "./shapes/stroke/preview";
 import { SelectionOverlay } from "./shapes/selection";
+import { useInspiration } from "@/hooks/use-canvas";
+import InspirationSidebar from "./shapes/inspiration-sidebar";
+import ChatWindow from "./shapes/generatedui/chat";
 type Props={}
 
 const InfiniteCanvas=(props:Props)=>{
@@ -30,13 +33,35 @@ const InfiniteCanvas=(props:Props)=>{
         hasSelectedText,
     }=useInfiniteCanvas()
 
+
+    const {isChatOpen,activeGeneratedUIId,generateWorkflow,exportDesign,closeChat,
+        toggleChat
+    }=useGlobalChat()
+
+    const {isInspirationOpen,closeInspiration,toggleInspiration}=useInspiration()
+
+    
+
     const draftShape=getDraftShape()
     const freeDrawPoints=getFreeDrawPoints()
     return (
         <>
          <TextSideBar isOpen={isSideBarOpen && hasSelectedText}/>
-         {/* inspiration */}
+         <InspirationSidebar
+         isOpen={isInspirationOpen}
+         onClose={closeInspiration}/>
          {/* chat window */}
+
+         {
+            activeGeneratedUIId && (
+                <ChatWindow
+                generatedUIId={activeGeneratedUIId}
+                isOpen={isChatOpen}
+                onClose={closeChat}
+                />
+            )
+         }
+
          <div ref={attachCanvasRef}
          role="application"
          aria-label="Infinite Drawing Canvas"
@@ -69,10 +94,10 @@ const InfiniteCanvas=(props:Props)=>{
                    <ShapeRenderer
                    key={s.id}
                    shape={s}
-                //    toggleInspiration={toggleInspiration}
-                //    toggleChat={toggleChat}
-                //    generateWorkFlow={generateWorkFlow}
-                //    exportDesign={exportDesign}
+                   toggleInspiration={toggleInspiration}
+                   toggleChat={toggleChat}
+                   generateWorkFlow={generateWorkflow}
+                   exportDesign={exportDesign}
                    />
                 ))
             }
