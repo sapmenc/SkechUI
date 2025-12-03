@@ -1,6 +1,6 @@
 'use client'
 import { useSearchParams,usePathname } from "next/navigation"
-import React from "react"
+import React, { useState } from "react"
 import Link from "next/link"
 import { useQuery } from "convex/react"
 import { api } from "../../../convex/_generated/api"
@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 import { useAppSelector } from "@/redux/store"
 import CreateProject from "../buttons/project"
 import Autosave from "../canvas/autosave"
+import { useAuth } from "@/hooks/use-auth"
 
 type TabProps={
    label:string
@@ -25,9 +26,8 @@ const Navbar=()=>{
     const pathname=usePathname()
     const hasCanvas=pathname.includes('canvas')
     const hasStyleGuide=pathname.includes('style-guide')
-
-    const me=useAppSelector((state)=>state.profile)
-
+    const me=useAppSelector((state)=>state.profile) 
+    const {handleSignOut}=useAuth()
     //create tabs
     const tabs:TabProps[]=[
     {
@@ -113,6 +113,7 @@ const Navbar=()=>{
                     <User className="size-5 text-black"/>
                 </AvatarFallback>
               </Avatar>
+              <Button onClick={()=>handleSignOut()}>Log out</Button>
               {/* Todo : add autosave and create project */}
 
               {hasCanvas && <Autosave/>}
