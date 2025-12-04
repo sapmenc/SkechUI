@@ -3,6 +3,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
 import { prompts } from "@/prompts";
 import { StyleGuideQuery,InspirationImagesQuery } from "@/convex/query.config";
+import { OpenRouter } from '@openrouter/sdk'
 
 export async function POST(request:NextRequest){
     try {
@@ -131,8 +132,9 @@ if (imageUrls.length > 0) {
 }
 
 userPrompt += `\n\nPlease generate a professional ${selectedPageType} that maintains complete design consistency with the main page while serving its specific functional purpose. Be creative and contextually appropriate!`;
-
-   //Create streaming response for workflow page generation
+   
+    
+  //  //Create streaming response for workflow page generation
    const result=streamText({
       model:anthropic('claude-opus-4-20250514'),
       messages:[
@@ -175,6 +177,7 @@ userPrompt += `\n\nPlease generate a professional ${selectedPageType} that maint
             Connection:'keep-alive'
         },
     })
+
 
     } catch (error) {
         console.error('Workflow generation API error:',error)
