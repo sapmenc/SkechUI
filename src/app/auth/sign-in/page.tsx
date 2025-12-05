@@ -11,7 +11,6 @@ export default function LoginPage() {
     const {signIn}=useAuthActions()
     const {signInForm,handleSignIn,isloading}=useAuth()
     const {register,handleSubmit,formState:{errors}}=signInForm
-
     return (
         <section className="flex min-h-screen bg-zinc-50 px-4 py-16 md:py-32 dark:bg-transparent">
             <form
@@ -118,7 +117,7 @@ export default function LoginPage() {
 
                     <div className="grid grid-cols-2 gap-3">
                         <Button
-                            onClick={void signIn("google")}
+                            onClick={()=>signIn("google")}
                             type="button"
                             variant="outline">
                             <svg
